@@ -1,5 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { ApiGateway } from './ApiGateway';
+import { TestLambda } from './Lambdas/test_lambda';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class InfraAsCodeStack extends cdk.Stack {
@@ -12,5 +14,11 @@ export class InfraAsCodeStack extends cdk.Stack {
     // const queue = new sqs.Queue(this, 'InfraAsCodeQueue', {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
+
+    const apigw = new ApiGateway(this);
+
+    const testLambdaFnx = new TestLambda(this, 'test_lambda_fnx');
+
+    apigw.addIntegration('GET', 'test', testLambdaFnx);
   }
 }
