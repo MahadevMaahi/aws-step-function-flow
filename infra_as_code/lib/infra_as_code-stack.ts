@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApiGateway } from './ApiGateway';
-import { TestLambda } from './Lambdas/test_lambda';
+import { TestLambda, test_lambda_integration_options, test_lambda_method_options } from './Lambdas/test_lambda';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class InfraAsCodeStack extends cdk.Stack {
@@ -19,6 +19,12 @@ export class InfraAsCodeStack extends cdk.Stack {
 
     const testLambdaFnx = new TestLambda(this, 'test_lambda_fnx');
 
-    apigw.addIntegration('GET', 'test', testLambdaFnx);
+    apigw.addIntegration(
+      'GET',
+      'test',
+      testLambdaFnx,
+      test_lambda_integration_options,
+      test_lambda_method_options
+      );
   }
 }

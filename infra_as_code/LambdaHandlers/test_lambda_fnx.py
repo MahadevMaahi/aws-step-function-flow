@@ -1,13 +1,9 @@
 import json
 
 def lambda_handler(event, context):
-    message = 'Hello from test lambda!'
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({
-            "Region ": message
-        })
-    }
+
+    action = event['action']
+    key = event['key']
+
+    message = 'Hello from test lambda! action = ' + action + ' received with Key = ' + key
+    return { "message ": message }

@@ -1,8 +1,7 @@
 import _lambda = require('aws-cdk-lib/aws-lambda');
-import _nodeLambda = require('aws-cdk-lib/aws-lambda-nodejs');
 import _logs = require('aws-cdk-lib/aws-logs');
 import { Construct } from 'constructs';
-import * as path from "path";
+import _apigw = require('aws-cdk-lib/aws-apigateway');
 
 export class TestLambda extends _lambda.Function {
     constructor(scope: Construct, fileName: string) {
@@ -14,3 +13,51 @@ export class TestLambda extends _lambda.Function {
         })
     }
 }
+
+export const test_lambda_integration_options: _apigw.LambdaIntegrationOptions = {
+    proxy: false,
+    requestParameters: {
+      'integration.request.querystring.action': 'method.request.querystring.action',
+      'integration.request.querystring.key': 'method.request.querystring.key',
+    },
+    requestTemplates: {
+      'application/json': JSON.stringify({ action: "$util.escapeJavaScript($input.params('action'))", key: "$util.escapeJavaScript($input.params('key'))", })
+    },
+    passthroughBehavior: _apigw.PassthroughBehavior.WHEN_NO_TEMPLATES,
+    integrationResponses: [
+      {
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': "'*'"
+        }
+      },
+      {
+        selectionPattern: "(\n|.)+",
+        statusCode: "500",
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': "'*'"
+        }
+      }
+    ],
+  };
+
+  export const test_lambda_method_options: _apigw.MethodOptions = {
+    requestParameters: {
+      'method.request.querystring.action': true,
+      'method.request.querystring.key': true
+    },
+    methodResponses: [
+      {
+        statusCode: "200",
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': true,
+        },
+      },
+      {
+        statusCode: "500",
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': true,
+        },
+      }
+    ]
+  };
