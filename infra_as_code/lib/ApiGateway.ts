@@ -10,14 +10,17 @@ export class ApiGateway extends _apigw.RestApi {
         })
     }
 
+    addResourcePath(path: string): _apigw.Resource {
+        return this.root.addResource(path);
+    }
+
     addIntegration(
         method: string,
-        path: string,
+        resource: _apigw.Resource,
         fnx: _lambda.IFunction,
         lambdaIntegrationOptions: _apigw.LambdaIntegrationOptions,
         methodOptions: _apigw.MethodOptions
     ) {
-        const resApi = this.root.addResource(path);
-        resApi.addMethod(method, new _apigw.LambdaIntegration(fnx, lambdaIntegrationOptions), methodOptions);
+        resource.addMethod(method, new _apigw.LambdaIntegration(fnx, lambdaIntegrationOptions), methodOptions);
     }
 }

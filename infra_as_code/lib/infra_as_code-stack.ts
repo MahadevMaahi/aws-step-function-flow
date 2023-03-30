@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApiGateway } from './ApiGateway';
-import { TestLambda, test_lambda_integration_options, test_lambda_method_options } from './Lambdas/test_lambda';
+import { TestSyncLambda, test_sync_lambda_integration_options, test_sync_lambda_method_options } from './Lambdas/test_sync_lambda';
+import { TestAsyncLambda, test_async_lambda_integration_options, test_async_lambda_method_options } from './Lambdas/test_async_lambda';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class InfraAsCodeStack extends cdk.Stack {
@@ -17,14 +18,26 @@ export class InfraAsCodeStack extends cdk.Stack {
 
     const apigw = new ApiGateway(this);
 
-    const testLambdaFnx = new TestLambda(this, 'test_lambda_fnx');
+    const testSyncLambdaFnx = new TestSyncLambda(this, 'test_sync_lambda_fnx');
+
+    const testASyncLambdaFnx = new TestAsyncLambda(this, 'test_async_lambda_fnx');
+
+    const resource = apigw.addResourcePath('test');
 
     apigw.addIntegration(
       'GET',
-      'test',
-      testLambdaFnx,
-      test_lambda_integration_options,
-      test_lambda_method_options
+      resource,
+      testSyncLambdaFnx,
+      test_sync_lambda_integration_options,
+      test_sync_lambda_method_options
+      );
+
+      apigw.addIntegration(
+        'POST',
+        resource,
+        testASyncLambdaFnx,
+        test_async_lambda_integration_options,
+        test_async_lambda_method_options
       );
   }
 }
